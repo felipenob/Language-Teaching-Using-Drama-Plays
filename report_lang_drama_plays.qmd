@@ -1,0 +1,106 @@
+---
+title: "Language Teaching with Drama Plays"
+author: "Felipe Nobrega"
+format: html
+editor: visual
+execute:
+  eval: false
+---
+
+# Language Teaching with Drama Plays - Report
+
+**Felipe Nobrega - Text Technology Project**
+
+## XPath commands
+
+1.  Extraction of *lemma* **can** from the play:
+
+```{xpath}
+//w[@lemma='can']
+```
+
+## Python commands
+
+1.  Solve the problem of special character at the beginning of the plays. In order to remove the special character that prevented the **XMLCopy Editor** from doing **XPath**, I have created the following script to automatically replace the first line of every XML file.
+
+```{python}
+import os
+
+def replace_first_line(file_path):
+    with open(file_path, 'r', encoding='utf-8-sig') as file:
+        lines = file.readlines()
+    
+    # Check if the first line starts with the specified string
+    if lines and lines[0].startswith('<TEI xmlns='):
+        lines[0] = '<TEI>\n'
+    
+    # Write the modified content back to the file
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.writelines(lines)
+    
+    print(f"Successfully processed: {file_path}")
+
+def process_xml_files(directory):
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.xml'):
+                file_path = os.path.join(root, file)
+                replace_first_line(file_path)
+
+# Specify the directory containing your XML files
+directory = r'D:\lang_drama_plays\plays'
+process_xml_files(directory)
+```
+
+2.  Parse XML in order to extract information in formatted text in order to feed Postgres tables.
+
+```{python}
+import xml.etree.ElementTree as ET
+
+# Parse XML file
+tree = ET.parse('modal_verbs_romeo_juliet.xml')
+root = tree.getroot()
+
+# Iterate through each 'w' element in the XML
+for w in root.findall('w'):
+    id = w.get('id')
+    section = w.get('n')
+# Extract element value
+    element_value = w.text.strip() if w.text else ''
+
+# Format the output
+    formatted_output = f"('{id}', '{section}', '{element_value}'),"
+
+# Print the results
+    print(formatted_output)
+```
+
+## Database Commands
+
+**sql commands**
+
+1.  Create Tables Command to create tables for *Modal Verbs*
+
+```{sql}
+CREATE TABLE can_lemma (
+	id SERIAL PRIMARY KEY,
+	text_id TEXT NOT NULL,
+	section TEXT NOT NULL,
+	word TEXT NOT NULL
+);
+```
+
+2.  Insert extracted data from XML files
+
+```{sql}
+INSERT INTO can_lemma (text_id, section, word) VALUES
+('fs-rom-0001640', 'PRO.11', 'could'),
+('fs-rom-0026450', '1.1.147', 'can'),
+(...)
+```
+
+*Table example*
+
+![](images/paste-1.png){#fig1 width="390"}
+
+knitr::knit_exit()

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Search Results</title>
+  </head>
+  <body>
+    <h1>Search Results for '{{ modal_verb }}'</h1>
+    <table border="1">
+      <tr>
+        <th>Word ID</th>
+        <th>Section</th>
+        <th>Modal Verb</th>
+        <th>View in Context</th>
+      </tr>
+      {% for row in results %}
+      <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td><a href="/text/romeo_and_juliet.html#{{ row[0] }}" target="_blank">View in context</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <a href="/">Back to Search</a>
+  </body>
+</html>

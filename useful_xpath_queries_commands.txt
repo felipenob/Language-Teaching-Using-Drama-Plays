@@ -1,0 +1,1 @@
+//w[@lemma='can'] -> search for can
