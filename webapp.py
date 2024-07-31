@@ -9,7 +9,7 @@ def get_db_connection():
     conn = psycopg2.connect(
         dbname='lang_drama_plays',
         user='postgres',
-        password='7932P@stGr#',
+        password='',
         host='localhost',
         port='5432'
     )
