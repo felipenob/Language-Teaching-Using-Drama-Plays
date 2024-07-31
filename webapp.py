@@ -4,20 +4,23 @@ import os
 
 app = Flask(__name__)
 
+# Connect to PostgreSQL database
 def get_db_connection():
     conn = psycopg2.connect(
         dbname='lang_drama_plays',
         user='postgres',
-        password='',
+        password='7932P@stGr#',
         host='localhost',
         port='5432'
     )
     return conn
 
+# Define root and main page template to be displayed
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Query in database
 @app.route('/search', methods=['POST'])
 def search():
     modal_verb = request.form['modal_verb'].lower()
@@ -33,7 +36,7 @@ def search():
     cur.close()
     conn.close()
     
-    return render_template('results.html', results=results, modal_verb=modal_verb)
+    return render_template('results.html', results=results, modal_verb=modal_verb) #results page
 
 @app.route('/text/<filename>')
 def serve_text(filename):

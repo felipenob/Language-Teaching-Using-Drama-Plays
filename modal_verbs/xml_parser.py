@@ -1,11 +1,11 @@
 import xml.etree.ElementTree as ET
 
 # Parse XML file
-tree = ET.parse('romeo_juliet_will.xml')
+tree = ET.parse('othello_will.xml')
 root = tree.getroot()
 
 # Open a file to write the results
-with open('romeo_juliet_will_results.txt', 'w', encoding='utf-8') as file:
+with open('othello_will_results.txt', 'w', encoding='utf-8') as file:
 # Iterate through each 'w' element in the XML
     for w in root.findall('w'):
         id = w.get('id')

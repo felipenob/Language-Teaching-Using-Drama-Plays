@@ -1,7 +1,9 @@
 ---
 title: "Language Teaching with Drama Plays"
 author: "Felipe Nobrega"
-format: html
+format: pdf
+toc: true
+toc-location: body
 editor: visual
 execute:
   eval: false
@@ -9,9 +11,56 @@ execute:
 
 # Language Teaching with Drama Plays - Report
 
-**Felipe Nobrega - Text Technology Project**
+**Felipe Nobrega - Text Technology Project Description**
 
-## XPath commands
+*Goal*
+
+Provide easy access to grammar topics that are present on William Shakespeare drama plays and may be useful for language teachers. Therefore, the project can be used to facilitate the usage of literature in the classroom and shorten class preparation time.
+
+*How?*
+
+-   Website that allows queries for specific grammar topics within the corpus of drama plays.
+
+-   Provide a list with results of the query and the context of the drama play where it is found.
+
+This project is based in three steps according to the project requirements of the course. Below we can find an overview of the project along with the required steps.
+
++-----------+----------------------------------------------------------------------------------------------------------------------+
+| Step      | Description                                                                                                          |
++===========+======================================================================================================================+
+| Collect   | 1.  Collect data from Shakespeare plays. DraCor Corpora was used. The files are found in .xml.                       |
++-----------+----------------------------------------------------------------------------------------------------------------------+
+| Prepare   | 1.  Perform data extraction from .xml using XPath in XML Copy Editor. Initial goal: Modal verbs in Romeo and Juliet. |
+|           | 2.  Parse the extracted data in simple text to be processed by PostgreSQL in order to populate tables.               |
+|           | 3.  Create a database for the plays and tables for grammar topics.                                                   |
++-----------+----------------------------------------------------------------------------------------------------------------------+
+| Access    | 1.  Create a Python app to connect to PostgreSQL to get information and perform queries within the plays database.   |
+|           | 2.  Display the results in a webpage - a table with the line, section, desired word and context from the play.       |
++-----------+----------------------------------------------------------------------------------------------------------------------+
+
+## Collect
+
+### DraCor Drama Corpora
+
+Access <https://dracor.org/shake> and download the .xml files corresponding to the following plays:
+
++------------------+-------------+-------------+-------------+
+| Play             | Processed   | Database    | Webpage     |
++==================+=============+=============+=============+
+| Romeo and Juliet | OK          | OK          | OK          |
++------------------+-------------+-------------+-------------+
+| Hamlet           | OK          | No          | No          |
++------------------+-------------+-------------+-------------+
+| Macbeth          | OK          | No          | No          |
++------------------+-------------+-------------+-------------+
+| King Lear        | OK          | No          | No          |
++------------------+-------------+-------------+-------------+
+| Othello          | OK          | No          | No          |
++------------------+-------------+-------------+-------------+
+
+## Prepare
+
+### XPath commands
 
 1.  Extraction of *lemma* **can** from the play:
 
@@ -19,7 +68,7 @@ execute:
 //w[@lemma='can']
 ```
 
-## Python commands
+### Python commands
 
 1.  Solve the problem of special character at the beginning of the plays. In order to remove the special character that prevented the **XMLCopy Editor** from doing **XPath**, I have created the following script to automatically replace the first line of every XML file.
 
@@ -75,7 +124,55 @@ for w in root.findall('w'):
     print(formatted_output)
 ```
 
-## Database Commands
+3.  XML to HTML converter. Convert extracted original text from XML to later link *text_id* element to *span class* in HTML format.
+
+```{python}
+from lxml import etree
+
+def convert_xml_to_simple_html(xml_file, html_file):
+    tree = etree.parse(xml_file)
+    root = tree.getroot()
+
+    html = etree.Element("html")
+    head = etree.SubElement(html, "head")
+    etree.SubElement(head, "meta", charset="utf-8")
+    etree.SubElement(head, "title").text = "Romeo and Juliet"
+    style = etree.SubElement(head, "style")
+    style.text = "body { line-height: 1.5; } .highlight { background-color: yellow; }"
+    body = etree.SubElement(html, "body")
+    text_div = etree.SubElement(body, "div", id="text")
+
+    current_section = None
+    for w in root.findall('.//w'):
+        if w.get('n') and w.get('n') != current_section:
+            current_section = w.get('n')
+            section_span = etree.SubElement(text_div, "span", id=w.get('id'), class_=current_section)
+            section_span.text = f"\n\n[{current_section}]\n"
+
+        word_span = etree.SubElement(text_div, "span", id=w.get('id'))
+        word_span.text = w.text
+        word_span.tail = " "
+
+    script = etree.SubElement(body, "script")
+    script.text = """
+    const wordId = window.location.hash.slice(1);
+    if (wordId) {
+        const word = document.getElementById(wordId);
+        if (word) {
+            word.classList.add('highlight');
+            word.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    """
+
+    with open(html_file, 'wb') as f:
+        f.write(etree.tostring(html, pretty_print=True, method="html", encoding="utf-8"))
+
+# Usage
+convert_xml_to_simple_html('romeo_juliet_text.xml', 'romeo_and_juliet.html')
+```
+
+### Database Commands
 
 **sql commands**
 
@@ -103,4 +200,77 @@ INSERT INTO can_lemma (text_id, section, word) VALUES
 
 ![](images/paste-1.png){#fig1 width="390"}
 
-knitr::knit_exit()
+3.  Create a master table for **all plays**
+
+```{sql}
+CREATE TABLE plays (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(100) UNIQUE NOT NULL
+);
+```
+
+4.  Populate the **plays** table
+
+```{sql}
+INSERT INTO plays (name) VALUES
+('Romeo and Juliet'),
+('Hamlet'),
+('Macbeth'),
+('Othello'),
+('King Lear');
+```
+
+## Access
+
+### Python commands
+
+1.  Webapp created using Flask library to connect to PostgreSQL database and perform queries that will be displayed in .html webpages.
+
+```{python}
+from flask import Flask, render_template, request, send_from_directory
+import psycopg2
+import os
+
+app = Flask(__name__)
+
+# Connect to PostgreSQL database
+def get_db_connection():
+    conn = psycopg2.connect(
+        dbname='lang_drama_plays',
+        user='postgres',
+        password='',
+        host='localhost',
+        port='5432'
+    )
+    return conn
+
+# Define root and main page template to be displayed
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Query in database
+@app.route('/search', methods=['POST'])
+def search():
+    modal_verb = request.form['modal_verb'].lower()
+    table_name = f"{modal_verb}_lemma"
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    query = f"SELECT text_id, section, word FROM {table_name}"
+    cur.execute(query)
+    results = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return render_template('results.html', results=results, modal_verb=modal_verb) #results page
+
+@app.route('/text/<filename>')
+def serve_text(filename):
+    return send_from_directory('text', filename)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
