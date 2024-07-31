@@ -25,18 +25,20 @@ Provide easy access to grammar topics that are present on William Shakespeare dr
 
 This project is based in three steps according to the project requirements of the course. Below we can find an overview of the project along with the required steps.
 
-+-----------+----------------------------------------------------------------------------------------------------------------------+
-| Step      | Description                                                                                                          |
-+===========+======================================================================================================================+
-| Collect   | 1.  Collect data from Shakespeare plays. DraCor Corpora was used. The files are found in .xml.                       |
-+-----------+----------------------------------------------------------------------------------------------------------------------+
-| Prepare   | 1.  Perform data extraction from .xml using XPath in XML Copy Editor. Initial goal: Modal verbs in Romeo and Juliet. |
-|           | 2.  Parse the extracted data in simple text to be processed by PostgreSQL in order to populate tables.               |
-|           | 3.  Create a database for the plays and tables for grammar topics.                                                   |
-+-----------+----------------------------------------------------------------------------------------------------------------------+
-| Access    | 1.  Create a Python app to connect to PostgreSQL to get information and perform queries within the plays database.   |
-|           | 2.  Display the results in a webpage - a table with the line, section, desired word and context from the play.       |
-+-----------+----------------------------------------------------------------------------------------------------------------------+
++----------+-------------------------------------------------------------------------------------------------------------------------------+
+| Step     | Description                                                                                                                   |
++==========+===============================================================================================================================+
+| Collect  | 1.  Collect data from Shakespeare plays. DraCor Corpora was used. The files are found in .xml.                                |
++----------+-------------------------------------------------------------------------------------------------------------------------------+
+| Prepare  | 1.  Perform data extraction from .xml using XPath in XML Copy Editor. Initial goal: Modal verbs in Romeo and Juliet.          |
+|          | 2.  Parse the extracted data in simple text to be processed by PostgreSQL in order to populate tables.                        |
+|          | 3.  Create a database for the plays and tables for grammar topics.                                                            |
+|          | 4.  Extract main text from play's .xml files using Xpath. Add the root \<text\> in each file.                                 |
+|          | 5.  Convert the .xml into .html using the xml_html_text_paser.py script in order to display the context in results.html page. |
++----------+-------------------------------------------------------------------------------------------------------------------------------+
+| Access   | 1.  Create a Python app to connect to PostgreSQL to get information and perform queries within the plays database.            |
+|          | 2.  Display the results in a webpage - a table with the line, section, desired word and context from the play.                |
++----------+-------------------------------------------------------------------------------------------------------------------------------+
 
 ## Collect
 
@@ -49,13 +51,13 @@ Access <https://dracor.org/shake> and download the .xml files corresponding to t
 +==================+=============+=============+=============+
 | Romeo and Juliet | OK          | OK          | OK          |
 +------------------+-------------+-------------+-------------+
-| Hamlet           | OK          | No          | No          |
+| Hamlet           | OK          | OK          | No          |
 +------------------+-------------+-------------+-------------+
-| Macbeth          | OK          | No          | No          |
+| Macbeth          | OK          | OK          | No          |
 +------------------+-------------+-------------+-------------+
-| King Lear        | OK          | No          | No          |
+| King Lear        | OK          | OK          | No          |
 +------------------+-------------+-------------+-------------+
-| Othello          | OK          | No          | No          |
+| Othello          | OK          | OK          | No          |
 +------------------+-------------+-------------+-------------+
 
 ## Prepare

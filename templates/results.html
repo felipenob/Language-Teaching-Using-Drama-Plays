@@ -3,25 +3,70 @@
   <head>
     <meta charset="utf-8">
     <title>Search Results</title>
+    <style>
+      h1 {
+      text-align: center;
+      border: solid gray;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 4px;
+    }
+
+    .caption {
+      text-align: center;
+      border: solid blue;
+      font-family: Arial, serif;
+      padding: 4px;
+      margin: auto;
+    }
+    
+    body {
+      text-align: center;
+      margin: 50px;
+      font-family: Arial, serif;
+      padding: 8px;
+    }
+
+    table {
+      width: 70%;
+      margin: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+    }
+
+    th {
+      width: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+      background-color: lightskyblue;
+    }
+
+    td {
+      width: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+    }
+    </style>
   </head>
   <body>
-    <h1>Search Results for '{{ modal_verb }}'</h1>
+    <h1>Search Results for '{{ modal_verb }}' in '{{ play }}'</h1>
+    <br>
+    <div class="caption"><b>Section caption:</b> <b><i>1</i></b>.<i>1</i>.<mark><i>68</i></mark> = <b><i>act</i></b>.<i>scene</i>.<mark><i>line</i></mark>
+    </div><br><br>
     <table border="1">
       <tr>
-        <th>Word ID</th>
         <th>Section</th>
         <th>Modal Verb</th>
         <th>View in Context</th>
       </tr>
       {% for row in results %}
       <tr>
-        <td>{{ row[0] }}</td>
         <td>{{ row[1] }}</td>
         <td>{{ row[2] }}</td>
-        <td><a href="/text/romeo_and_juliet.html#{{ row[0] }}" target="_blank">View in context</a></td>
+        <td><a href="/text/{{ play|lower|replace(' ', '_') }}.html#{{ row[0] }}" target="_blank">View in context</a></td>
       </tr>
       {% endfor %}
     </table>
     <a href="/">Back to Search</a>
+  <p>Created by Felipe Nobrega.</p>
   </body>
 </html>

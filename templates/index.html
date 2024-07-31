@@ -2,20 +2,141 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Search Shakespeare Plays</title>
+    <title>Shakespeare Play Search</title>
+    <style>
+    div {
+      width: 600px;
+      border: 5px solid blue;
+      padding: 50px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      border: solid gray;
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 4px;
+    }
+
+    h3 {
+      text-align: center;
+      border: solid blue;
+      font-family: Arial, serif;
+      padding: 4px;
+    }
+    
+    body {
+      text-align: center;
+      margin: 50px;
+      font-family: Arial, serif;
+      padding: 8px;
+    }
+
+    table {
+      width: 70%;
+      margin: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+    }
+
+    th {
+      width: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+      background-color: lightskyblue;
+    }
+
+    td {
+      width: auto;
+      border: 3px solid black;
+      border-collapse: collapse;
+    }
+
+    .searchbar {
+      border: 3px solid black;
+      width: 40%;
+      height: 40%;
+    }
+
+    </style>
   </head>
   <body>
-    <h1>Search Shakespeare Plays for Modal Verbs</h1>
-    <form action="/search" method="post">
-      <label for="modal_verb">Select Modal Verb:</label>
-      <select id="modal_verb" name="modal_verb">
-        <option value="can">Can</option>
-        <option value="may">May</option>
-        <option value="must">Must</option>
-        <option value="shall">Shall</option>
-        <option value="will">Will</option>
-      </select>
-      <button type="submit">Search</button>
-    </form>
+    <h1>Language Teaching using Shakespeare Plays</h1>
+    <h3>Project created by Felipe Nobrega
+    <br>Contact: email <a href= "mailto: felipeaugnobrega@gmail.com"> felipeaugnobrega@gmail.com </a> / github <a href="https://github.com/felipenob">felipenob</a> 
+    <br>Current version: 1.1
+    </h3>
+    <div>
+    <b>Goal</b>
+    <br>Provide easy access to grammar topics that are present on William Shakespeare drama plays and may be useful for language teachers.
+    Therefore, the project can be used to facilitate the usage of literature in the classroom and shorten class preparation time.
+    <br>
+    <br> <b>Currently available grammar topics:</b>
+    <table>
+      <tbody>
+        <td>Modal verbs</td>
+      </tbody>
+    </table>
+    (more grammar topics will be added in the future)
+    <br>
+    <br><b>Instructions:</b>
+    <br>1. Select a Shakespeare play from the list.
+    <br>2. Choose a modal verb.
+    <br><br>
+
+    <div class="searchbar">
+    <p>
+      <form action="/search" method="post">
+        <label for="play"><b>SELECT PLAY:</b></label>
+        <br><select id="play" name="play">
+          {% for play in plays %}
+            <option value="{{ play }}">{{ play }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <label for="modal_verb"><b>SELECT MODAL VERB:</b></label>
+        <br><select id="modal_verb" name="modal_verb">
+          {% for verb, _ in modal_verbs.items() %}
+            <option value="{{ verb }}">{{ verb }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit">Search</button>
+      </form>
+    </p>
+  </div>
+
+    <p><b>Attention!</b>
+    <br>The modal verbs are classified by <b>lemma</b>. It means that, for instance, in the group <b>can</b> you can find all related modal verbs such as <i>cannot, cannst etc.</i>
+    <br><br>In order to help you, we provide a list with all modal verbs by group.
+    <table>
+      <tbody>
+      <tr>
+      <th>Modal verb lemma</th>
+      <th>List of words included</th>
+      </tr>
+      <tr>
+      <td>can</td>
+      <td>"Could"<br />"Can"<br />"cannot"<br />"canst"<br />"couldst"<br />"could"<br />"Couldst"<br />"can"<br />"Cannot"<br />"Canst"</td>
+      </tr>
+      <tr>
+      <td>may</td>
+      <td>"mayst"<br />"may&rsquo;st"<br />"May"<br />"mightst"<br />"Might"<br />"might&rsquo;st"<br />"may"<br />"might"</td>
+      </tr>
+      <tr>
+      <td>must</td>
+      <td>"Must"<br />"must"</td>
+      </tr>
+      <tr>
+      <td>shall</td>
+      <td>"shouldst"<br />"shall"<br />"Shall"<br />"shalt"<br />"Should"<br />"should"<br />"Shalt"</td>
+      </tr>
+      <tr>
+      <td>will</td>
+      <td>"Wouldst"<br />"wouldst"<br />"would"<br />"willing"<br />"&rsquo;lt"<br />"&rsquo;dst"<br />"will"<br />"wilt"<br />"wills"<br />"Woo&rsquo;t"<br />"Will"<br />"nill"<br />"Wilt"<br />"woo&rsquo;t"<br />"Would"</td>
+      </tr>
+      </tbody>
+      </table>    
+    </div>
   </body>
 </html>
